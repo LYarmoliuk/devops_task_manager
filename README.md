@@ -56,6 +56,6 @@ git init
 git add .
 git commit -m "Initial DevOps lab 1"
 git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/devops-lab1.git
+git remote add origin https://github.com/LYarmoliuk/devops_task_manager.git
 git push -u origin main
 ```
