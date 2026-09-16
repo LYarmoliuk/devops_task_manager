@@ -1,0 +1,1333 @@
+<!doctype html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DevOps Task Manager</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
+
+        :root {
+            --cream: #f7f0e5;
+            --paper: rgba(255, 252, 246, 0.94);
+            --ink: #252321;
+            --muted: #8d887f;
+
+            --gold: #d8b565;
+            --gold-dark: #b49352;
+
+            --lavender: #a9b9da;
+
+            --line: #e9dfcf;
+
+            --shadow:
+                0 28px 70px rgba(92, 79, 57, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            background: var(--cream);
+
+            color: var(--ink);
+
+            font-family:
+                "DM Sans",
+                system-ui,
+                sans-serif;
+
+            overflow-x: hidden;
+        }
+
+        /* =========================
+           BACKGROUND DECORATIONS
+           ========================= */
+
+        body::before,
+        body::after {
+            content: "";
+
+            position: fixed;
+
+            z-index: -2;
+
+            pointer-events: none;
+        }
+
+        /* Верхня лавандова форма */
+
+        body::before {
+            width: 560px;
+            height: 260px;
+
+            top: -85px;
+            right: -120px;
+
+            background: var(--lavender);
+
+            border-radius:
+                48% 52% 64% 36% /
+                57% 39% 61% 43%;
+
+            transform: rotate(7deg);
+        }
+
+        /* Нижня лавандова форма */
+
+        body::after {
+            width: 470px;
+            height: 390px;
+
+            left: -175px;
+            bottom: -155px;
+
+            background: var(--lavender);
+
+            border-radius:
+                61% 39% 43% 57% /
+                44% 57% 43% 56%;
+
+            transform: rotate(-18deg);
+        }
+
+        /* Маленька бежева форма */
+
+        .blob-small {
+            position: fixed;
+
+            z-index: -1;
+
+            width: 280px;
+            height: 170px;
+
+            left: -100px;
+            top: 42%;
+
+            background: #f3dfb7;
+
+            border-radius:
+                63% 37% 70% 30% /
+                43% 57% 43% 57%;
+
+            transform: rotate(22deg);
+        }
+
+        /* =========================
+           MAIN PAGE
+           ========================= */
+
+        .page {
+            width: min(
+                1120px,
+                calc(100% - 36px)
+            );
+
+            margin: 0 auto;
+
+            padding: 48px 0;
+        }
+
+        /* =========================
+           HEADER
+           ========================= */
+
+        .brand {
+            text-align: center;
+
+            margin-bottom: 24px;
+
+            animation:
+                fadeUp
+                0.55s
+                ease
+                both;
+        }
+
+        .brand-kicker {
+            color: var(--gold-dark);
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.18em;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            margin-bottom: 8px;
+        }
+
+        .brand h1 {
+            margin: 0;
+
+            font-family:
+                "Playfair Display",
+                Georgia,
+                serif;
+
+            font-size:
+                clamp(
+                    34px,
+                    5vw,
+                    58px
+                );
+
+            line-height: 1;
+
+            letter-spacing: -0.035em;
+        }
+
+        .brand p {
+            margin:
+                12px auto 0;
+
+            max-width: 520px;
+
+            color: var(--muted);
+
+            font-size: 15px;
+        }
+
+        /* =========================
+           NOTE CARD
+           ========================= */
+
+        .note {
+            position: relative;
+
+            width: min(
+                720px,
+                100%
+            );
+
+            margin: 0 auto;
+
+            padding:
+                38px 42px 34px;
+
+            background:
+                var(--paper);
+
+            border:
+                1px solid
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.75
+                );
+
+            border-radius: 38px;
+
+            box-shadow: var(--shadow);
+
+            backdrop-filter: blur(8px);
+
+            animation:
+                fadeUp
+                0.65s
+                0.08s
+                ease
+                both;
+        }
+
+        /* Внутрішня тонка рамка */
+
+        .note::before {
+            content: "";
+
+            position: absolute;
+
+            inset: 10px;
+
+            border:
+                1px solid
+                rgba(
+                    216,
+                    181,
+                    101,
+                    0.16
+                );
+
+            border-radius: 30px;
+
+            pointer-events: none;
+        }
+
+        /* =========================
+           CARD HEADER
+           ========================= */
+
+        .note-header {
+            position: relative;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 16px;
+
+            margin-bottom: 26px;
+        }
+
+        .note-title {
+            margin: 0;
+
+            font-family:
+                "Playfair Display",
+                Georgia,
+                serif;
+
+            font-size:
+                clamp(
+                    30px,
+                    5vw,
+                    44px
+                );
+
+            letter-spacing: -0.03em;
+        }
+
+        .mini-label {
+            color: var(--muted);
+
+            font-size: 12px;
+
+            margin-top: 5px;
+        }
+
+        /* Кнопка ••• */
+
+        .menu {
+            width: 42px;
+            height: 42px;
+
+            border:
+                1px solid
+                var(--line);
+
+            border-radius: 50%;
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.6
+                );
+
+            color:
+                var(--gold-dark);
+
+            display: grid;
+
+            place-items: center;
+
+            font-size: 19px;
+
+            flex-shrink: 0;
+        }
+
+        /* =========================
+           PROGRESS
+           ========================= */
+
+        .progress-wrap {
+            position: relative;
+
+            margin-bottom: 24px;
+
+            padding:
+                13px 15px;
+
+            background:
+                rgba(
+                    244,
+                    236,
+                    222,
+                    0.72
+                );
+
+            border-radius: 17px;
+        }
+
+        .progress-top {
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            font-size: 12px;
+
+            color: var(--muted);
+
+            margin-bottom: 8px;
+        }
+
+        .progress {
+            height: 6px;
+
+            border-radius: 999px;
+
+            background: #e5dac7;
+
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+
+            width: 0%;
+
+            border-radius: inherit;
+
+            background:
+                var(--gold);
+
+            transition:
+                width
+                0.3s
+                ease;
+        }
+
+        /* =========================
+           TASK LIST
+           ========================= */
+
+        .task-list {
+            position: relative;
+
+            list-style: none;
+
+            padding: 0;
+
+            margin: 0;
+        }
+
+        .task {
+            display: grid;
+
+            grid-template-columns:
+                42px
+                1fr;
+
+            align-items: center;
+
+            gap: 13px;
+
+            min-height: 68px;
+
+            padding:
+                9px 0;
+
+            border-bottom:
+                1px solid
+                var(--line);
+
+            animation:
+                taskIn
+                0.3s
+                ease
+                both;
+        }
+
+        .task:last-child {
+            border-bottom: 0;
+        }
+
+        /* =========================
+           CHECKBOX
+           ========================= */
+
+        .check {
+            appearance: none;
+
+            width: 34px;
+            height: 34px;
+
+            margin: 0;
+
+            border:
+                2px solid
+                #dcc48d;
+
+            border-radius: 50%;
+
+            background:
+                transparent;
+
+            cursor: pointer;
+
+            position: relative;
+
+            transition:
+                0.2s ease;
+        }
+
+        .check:hover {
+            transform: scale(1.06);
+
+            background:
+                rgba(
+                    216,
+                    181,
+                    101,
+                    0.12
+                );
+        }
+
+        .check:checked {
+            background:
+                var(--gold);
+
+            border-color:
+                var(--gold);
+        }
+
+        .check:checked::after {
+            content: "✓";
+
+            position: absolute;
+
+            inset: 0;
+
+            display: grid;
+
+            place-items: center;
+
+            color: white;
+
+            font-size: 18px;
+
+            font-weight: 700;
+        }
+
+        /* =========================
+           TASK TEXT
+           ========================= */
+
+        .task-text {
+            font-size: 17px;
+
+            line-height: 1.4;
+
+            word-break: break-word;
+
+            transition:
+                0.2s ease;
+        }
+
+        .task.done .task-text {
+            color:
+                var(--muted);
+
+            text-decoration:
+                line-through;
+
+            text-decoration-thickness:
+                1.5px;
+        }
+
+        /* =========================
+           EMPTY STATE
+           ========================= */
+
+        .empty {
+            text-align: center;
+
+            padding:
+                32px 12px;
+
+            color:
+                var(--muted);
+
+            font-size: 14px;
+        }
+
+        /* =========================
+           ADD TASK
+           ========================= */
+
+        .composer {
+            position: relative;
+
+            display: flex;
+
+            gap: 10px;
+
+            margin-top: 25px;
+
+            padding-top: 22px;
+
+            border-top:
+                1px solid
+                var(--line);
+        }
+
+        .composer input {
+            min-width: 0;
+
+            flex: 1;
+
+            border:
+                1px solid
+                var(--line);
+
+            border-radius: 15px;
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.72
+                );
+
+            color:
+                var(--ink);
+
+            padding:
+                13px 15px;
+
+            outline: none;
+
+            font: inherit;
+
+            transition:
+                0.2s ease;
+        }
+
+        .composer input:focus {
+            border-color:
+                var(--gold);
+
+            box-shadow:
+                0 0 0 4px
+                rgba(
+                    216,
+                    181,
+                    101,
+                    0.12
+                );
+        }
+
+        .add {
+            border: 0;
+
+            border-radius: 15px;
+
+            padding:
+                0 20px;
+
+            background:
+                var(--gold);
+
+            color: white;
+
+            font: inherit;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition:
+                0.2s ease;
+        }
+
+        .add:hover {
+            background:
+                var(--gold-dark);
+
+            transform:
+                translateY(-1px);
+        }
+
+        .add:disabled {
+            opacity: 0.6;
+
+            cursor: wait;
+        }
+
+        /* =========================
+           FOOTER
+           ========================= */
+
+        .footer {
+            position: relative;
+
+            display: flex;
+
+            justify-content: center;
+
+            gap: 10px;
+
+            flex-wrap: wrap;
+
+            margin-top: 23px;
+
+            color:
+                var(--muted);
+
+            font-size: 12px;
+        }
+
+        .footer span {
+            padding:
+                7px 11px;
+
+            border-radius: 999px;
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.45
+                );
+        }
+
+        .api-dot {
+            display: inline-block;
+
+            width: 7px;
+            height: 7px;
+
+            margin-right: 5px;
+
+            border-radius: 50%;
+
+            background:
+                #b6b0a7;
+
+            vertical-align: middle;
+        }
+
+        .api-dot.online {
+            background:
+                #9bbd91;
+        }
+
+        /* =========================
+           ANIMATIONS
+           ========================= */
+
+        @keyframes fadeUp {
+
+            from {
+                opacity: 0;
+
+                transform:
+                    translateY(14px);
+            }
+
+            to {
+                opacity: 1;
+
+                transform:
+                    translateY(0);
+            }
+        }
+
+        @keyframes taskIn {
+
+            from {
+                opacity: 0;
+
+                transform:
+                    translateX(-7px);
+            }
+
+            to {
+                opacity: 1;
+
+                transform:
+                    translateX(0);
+            }
+        }
+
+        /* =========================
+           MOBILE
+           ========================= */
+
+        @media (
+            max-width: 620px
+        ) {
+
+            .page {
+                width:
+                    min(
+                        100% - 22px,
+                        720px
+                    );
+
+                padding:
+                    28px 0;
+            }
+
+            .note {
+                padding:
+                    30px 22px 24px;
+
+                border-radius:
+                    29px;
+            }
+
+            .note::before {
+                inset: 7px;
+
+                border-radius:
+                    23px;
+            }
+
+            .task-text {
+                font-size: 16px;
+            }
+
+            .composer {
+                flex-direction:
+                    column;
+            }
+
+            .add {
+                min-height:
+                    46px;
+            }
+
+            body::before {
+                width:
+                    360px;
+
+                right:
+                    -150px;
+            }
+
+            body::after {
+                width:
+                    330px;
+
+                left:
+                    -170px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="blob-small"></div>
+
+    <main class="page">
+
+        <!-- =========================
+             HEADER
+             ========================= -->
+
+        <header class="brand">
+
+            <div class="brand-kicker">
+                devops • daily planner
+            </div>
+
+            <h1>
+                small steps, big builds
+            </h1>
+
+            <p>
+                Простий список задач
+                для нашого контейнеризованого
+                DevOps-проєкту.
+            </p>
+
+        </header>
+
+
+        <!-- =========================
+             TASK CARD
+             ========================= -->
+
+        <section
+            class="note"
+            aria-label="Список задач"
+        >
+
+            <div class="note-header">
+
+                <div>
+
+                    <h2 class="note-title">
+                        my to-do list
+                    </h2>
+
+                    <div
+                        class="mini-label"
+                        id="dateLabel"
+                    >
+                        сьогодні
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="menu"
+                    title="Task Manager"
+                >
+                    •••
+                </div>
+
+            </div>
+
+
+            <!-- =========================
+                 PROGRESS
+                 ========================= -->
+
+            <div class="progress-wrap">
+
+                <div class="progress-top">
+
+                    <span>
+                        progress
+                    </span>
+
+                    <strong
+                        id="progressText"
+                    >
+                        0%
+                    </strong>
+
+                </div>
+
+
+                <div class="progress">
+
+                    <div
+                        class="progress-bar"
+                        id="progressBar"
+                    ></div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =========================
+                 TASKS
+                 ========================= -->
+
+            <ul
+                class="task-list"
+                id="tasks"
+            >
+
+                <li class="empty">
+                    Завантаження задач…
+                </li>
+
+            </ul>
+
+
+            <!-- =========================
+                 ADD TASK FORM
+                 ========================= -->
+
+            <form
+                class="composer"
+                id="taskForm"
+            >
+
+                <input
+                    id="title"
+                    autocomplete="off"
+                    placeholder="додати нову задачу…"
+                    maxlength="200"
+                    required
+                >
+
+                <button
+                    class="add"
+                    type="submit"
+                >
+                    Додати
+                </button>
+
+            </form>
+
+
+            <!-- =========================
+                 FOOTER
+                 ========================= -->
+
+            <div class="footer">
+
+                <span id="status">
+
+                    <i class="api-dot"></i>
+
+                    підключення до API…
+
+                </span>
+
+
+                <span>
+                    Docker • FastAPI • PostgreSQL
+                </span>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================
+         JAVASCRIPT
+         ========================= -->
+
+    <script>
+
+        const tasksEl =
+            document.getElementById(
+                "tasks"
+            );
+
+        const form =
+            document.getElementById(
+                "taskForm"
+            );
+
+        const input =
+            document.getElementById(
+                "title"
+            );
+
+        const statusEl =
+            document.getElementById(
+                "status"
+            );
+
+        const progressBar =
+            document.getElementById(
+                "progressBar"
+            );
+
+        const progressText =
+            document.getElementById(
+                "progressText"
+            );
+
+
+        /* =========================
+           SECURITY
+           ========================= */
+
+        function escapeHtml(value) {
+
+            return value.replace(
+                /[&<>"']/g,
+
+                char => ({
+
+                    "&": "&amp;",
+                    "<": "&lt;",
+                    ">": "&gt;",
+                    '"': "&quot;",
+                    "'": "&#039;"
+
+                }[char])
+            );
+        }
+
+
+        /* =========================
+           UPDATE PROGRESS
+           ========================= */
+
+        function updateProgress(tasks) {
+
+            const total =
+                tasks.length;
+
+            const done =
+                tasks.filter(
+                    task =>
+                        task.completed
+                ).length;
+
+
+            const percent =
+                total
+                    ? Math.round(
+                        done / total * 100
+                    )
+                    : 0;
+
+
+            progressBar.style.width =
+                percent + "%";
+
+            progressText.textContent =
+                percent + "%";
+        }
+
+
+        /* =========================
+           LOAD TASKS
+           ========================= */
+
+        async function loadTasks() {
+
+            try {
+
+                const response =
+                    await fetch(
+                        "/api/tasks"
+                    );
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "API error"
+                    );
+                }
+
+
+                const tasks =
+                    await response.json();
+
+
+                if (!tasks.length) {
+
+                    tasksEl.innerHTML = `
+                        <li class="empty">
+                            Поки що немає задач ✦
+                            <br>
+                            Додай першу нижче.
+                        </li>
+                    `;
+
+                } else {
+
+                    tasksEl.innerHTML =
+                        tasks.map(
+                            (
+                                task,
+                                index
+                            ) => `
+
+                        <li
+                            class="task ${
+                                task.completed
+                                    ? "done"
+                                    : ""
+                            }"
+                            style="
+                                animation-delay:
+                                ${index * 45}ms
+                            "
+                        >
+
+                            <input
+                                class="check"
+                                type="checkbox"
+
+                                ${
+                                    task.completed
+                                        ? "checked"
+                                        : ""
+                                }
+
+                                aria-label="Виконано"
+
+                                onchange="
+                                    toggleTask(
+                                        ${task.id}
+                                    )
+                                "
+                            >
+
+                            <span
+                                class="task-text"
+                            >
+                                ${
+                                    escapeHtml(
+                                        task.title
+                                    )
+                                }
+                            </span>
+
+                        </li>
+
+                    `
+                        ).join("");
+                }
+
+
+                updateProgress(tasks);
+
+
+                statusEl.innerHTML = `
+                    <i class="api-dot online"></i>
+                    API online
+                `;
+
+            } catch (error) {
+
+                tasksEl.innerHTML = `
+                    <li class="empty">
+                        Не вдалося
+                        підключитися до API.
+                    </li>
+                `;
+
+
+                statusEl.innerHTML = `
+                    <i class="api-dot"></i>
+                    API offline
+                `;
+
+                progressBar.style.width =
+                    "0%";
+
+                progressText.textContent =
+                    "0%";
+            }
+        }
+
+
+        /* =========================
+           TOGGLE TASK
+           ========================= */
+
+        async function toggleTask(id) {
+
+            await fetch(
+                `/api/tasks/${id}`,
+                {
+                    method: "PATCH"
+                }
+            );
+
+            loadTasks();
+        }
+
+
+        /* =========================
+           ADD TASK
+           ========================= */
+
+        form.addEventListener(
+            "submit",
+            async event => {
+
+                event.preventDefault();
+
+
+                const title =
+                    input.value.trim();
+
+
+                if (!title) {
+
+                    return;
+                }
+
+
+                const button =
+                    form.querySelector(
+                        "button"
+                    );
+
+
+                button.disabled =
+                    true;
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            "/api/tasks",
+                            {
+                                method:
+                                    "POST",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
+
+                                body:
+                                    JSON.stringify({
+                                        title
+                                    })
+                            }
+                        );
+
+
+                    if (response.ok) {
+
+                        input.value =
+                            "";
+
+                        await loadTasks();
+                    }
+
+                } finally {
+
+                    button.disabled =
+                        false;
+
+                    input.focus();
+                }
+
+            }
+        );
+
+
+        /* =========================
+           CURRENT DATE
+           ========================= */
+
+        const now =
+            new Date();
+
+
+        document.getElementById(
+            "dateLabel"
+        ).textContent =
+            now.toLocaleDateString(
+                "uk-UA",
+                {
+                    weekday:
+                        "long",
+
+                    day:
+                        "numeric",
+
+                    month:
+                        "long"
+                }
+            );
+
+
+        /* =========================
+           START APPLICATION
+           ========================= */
+
+        loadTasks();
+
+    </script>
+
+</body>
+</html>
