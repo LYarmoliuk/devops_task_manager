@@ -44,7 +44,7 @@ class TaskResponse(BaseModel):
     completed: bool
 
 
-app = FastAPI(title="DevOps Task Manager API")
+app = FastAPI(title="DevOps Task Manager API v2")
 
 
 @app.on_event("startup")
