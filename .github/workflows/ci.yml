@@ -62,13 +62,24 @@ jobs:
 
       - name: Test frontend container
         run: |
-          docker run -d --name frontend-test -p 8080:80 task-manager-frontend:test
-          sleep 5
+          docker network create test-network
+
+          docker run -d \
+            --name frontend-test \
+            --network test-network \
+            --add-host backend:127.0.0.1 \
+            -p 8080:80 \
+            task-manager-frontend:test
+
+          sleep 3
+
           docker ps -a
           docker logs frontend-test
-          curl --fail --retry 5 --retry-delay 2 http://localhost:8080
-          docker rm -f frontend-test
 
+          curl --fail http://localhost:8080
+
+          docker rm -f frontend-test
+          docker network rm test-network
 
   docker:
     name: Docker - Build Images
