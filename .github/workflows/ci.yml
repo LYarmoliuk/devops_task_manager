@@ -63,8 +63,10 @@ jobs:
       - name: Test frontend container
         run: |
           docker run -d --name frontend-test -p 8080:80 task-manager-frontend:test
-          sleep 3
-          curl --fail http://localhost:8080
+          sleep 5
+          docker ps -a
+          docker logs frontend-test
+          curl --fail --retry 5 --retry-delay 2 http://localhost:8080
           docker rm -f frontend-test
 
 

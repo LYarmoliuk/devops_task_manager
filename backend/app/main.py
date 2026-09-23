@@ -1,7 +1,8 @@
 import os
+
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from sqlalchemy import create_engine, String, Integer, Boolean
+from sqlalchemy import Boolean, Integer, String, create_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 
 DATABASE_URL = os.getenv(
