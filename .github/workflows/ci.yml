@@ -83,7 +83,7 @@ jobs:
           docker network rm test-network
 
   docker:
-    name: Docker - Build and Publish Images
+    name: Docker - Build Images
     runs-on: ubuntu-latest
 
     needs:
