@@ -1,0 +1,6 @@
+apiVersion: v2
+name: task-manager
+description: Helm chart for DevOps Task Manager
+type: application
+version: 0.1.0
+appVersion: "1.1.0"

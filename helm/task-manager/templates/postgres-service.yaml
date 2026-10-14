@@ -1,0 +1,14 @@
+﻿apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "task-manager.fullname" . }}-postgres
+  labels:
+    {{- include "task-manager.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.postgres.port }}
+      targetPort: 5432
+  selector:
+    app.kubernetes.io/component: postgres
+    app.kubernetes.io/instance: {{ .Release.Name }}
