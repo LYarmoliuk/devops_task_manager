@@ -20,12 +20,32 @@ spec:
     spec:
       containers:
         - name: backend
-          image: ghcr.io/lyarmoliuk/devops_task_manager-backend:1.0.0
+          image: ghcr.io/lyarmoliuk/devops_task_manager-backend:1.1.0
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
           
           env:
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: task-manager-config
+                  key: POSTGRES_DB
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: task-manager-config
+                  key: POSTGRES_USER
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: task-manager-config
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: task-manager-config
+                  key: DB_PORT
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
