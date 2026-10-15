@@ -14,7 +14,6 @@ frontend:
     repository: task-manager-frontend
     tag: "test"
     pullPolicy: IfNotPresent
-    tag: "1.1.0"
   resources:
     requests:
       cpu: 25m
