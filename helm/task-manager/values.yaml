@@ -1,0 +1,62 @@
+﻿backend:
+  image:
+    repository: ghcr.io/lyarmoliuk/devops_task_manager-backend
+    tag: "1.1.0"
+  replicas: 2
+  port: 8000
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+frontend:
+  image:
+    repository: ghcr.io/lyarmoliuk/devops_task_manager-frontend
+    tag: "1.1.0"
+    pullPolicy: IfNotPresent
+  replicas: 2
+  port: 80
+  service:
+    type: NodePort
+    nodePort: 30080
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 250m
+      memory: 128Mi
+
+postgres:
+  image:
+    repository: postgres
+    tag: "16-alpine"
+  replicas: 1
+  auth:
+    username: postgres
+    database: tasks
+    password: "REPLACE_ME"
+  port: 5432
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+persistence:
+  enabled: true
+  existingClaim: postgres-pvc
+  size: 1Gi
+
+config:
+  appVersion: "1.1.0"
+
+ingress:
+  enabled: false
+  className: nginx
+  host: task-manager.local

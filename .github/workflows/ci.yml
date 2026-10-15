@@ -68,7 +68,7 @@ jobs:
           docker run -d \
             --name frontend-test \
             --network test-network \
-            --add-host backend:127.0.0.1 \
+            --add-host task-manager-backend:127.0.0.1 \
             -p 8080:80 \
             task-manager-frontend:test
 
