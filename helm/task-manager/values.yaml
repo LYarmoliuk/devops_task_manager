@@ -16,6 +16,7 @@ frontend:
   image:
     repository: ghcr.io/lyarmoliuk/devops_task_manager-frontend
     tag: "1.1.0"
+    pullPolicy: IfNotPresent
   replicas: 2
   port: 80
   service:
