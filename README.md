@@ -330,3 +330,54 @@ minikube stop
 ## Результат
 
 У межах лабораторної роботи розгорнуто Task Manager у Minikube, використано окремий namespace, ConfigMap, Secret, Services, Ingress і постійне сховище для PostgreSQL. Перевірено стан Pod-ів, метрики ресурсів, масштабування, самовідновлення та механізми оновлення й відкату Deployment.
+
+@'
+
+---
+
+## Лабораторна №4 — Helm
+
+### Helm Chart
+
+Helm chart розташований у `helm/task-manager/`.
+
+- `Chart.yaml` — метадані Helm chart.
+- `values.yaml` — параметри за замовчуванням.
+- `values-dev.yaml` — конфігурація development.
+- `values-prod.yaml` — конфігурація production.
+- `templates/` — Kubernetes-шаблони.
+- `templates/_helpers.tpl` — шаблони назв і labels.
+- `templates/NOTES.txt` — інструкції після встановлення.
+- `templates/tests.yaml` — Helm test hook.
+
+`version` у Chart.yaml — версія Helm chart, а `appVersion` — версія застосунку.
+
+### Основні параметри values.yaml
+
+| Параметр | Призначення |
+|---|---|
+| backend.image.repository | Docker-образ backend |
+| backend.image.tag | Тег backend |
+| backend.replicas | Кількість реплік backend |
+| backend.resources | CPU та memory backend |
+| frontend.image.repository | Docker-образ frontend |
+| frontend.image.tag | Тег frontend |
+| frontend.image.pullPolicy | Політика завантаження образу |
+| frontend.replicas | Кількість реплік frontend |
+| frontend.resources | CPU та memory frontend |
+| frontend.service.type | Тип Kubernetes Service |
+| postgres.image.repository | Docker-образ PostgreSQL |
+| postgres.image.tag | Тег PostgreSQL |
+| postgres.auth.username | Користувач PostgreSQL |
+| postgres.auth.database | Назва бази даних |
+| postgres.auth.password | Пароль PostgreSQL |
+| persistence.enabled | Використання PVC |
+| persistence.existingClaim | Назва наявного PVC |
+| persistence.size | Розмір сховища |
+| ingress.enabled | Увімкнення Ingress |
+| ingress.host | Домен Ingress |
+
+### Встановлення development
+
+```powershell
+helm install task-manager helm/task-manager -n devops-task-manager --create-namespace -f helm/task-manager/values-dev.yaml --set-string postgres.auth.password="<PASSWORD>"
