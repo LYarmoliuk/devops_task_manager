@@ -24,8 +24,8 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}"
-          imagePullPolicy: Always
+          image: "task-manager-frontend:test"
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: {{ .Values.frontend.port }}
           resources:
