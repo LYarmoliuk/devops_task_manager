@@ -96,3 +96,8 @@ def toggle_task(task_id: int):
         db.commit()
         db.refresh(item)
         return item
+
+
+@app.get("/version")
+def version():
+    return {"version": os.getenv("APP_VERSION", "dev")}
